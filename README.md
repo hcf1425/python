@@ -1,2 +1,2 @@
 # python
-learn by doing same small project
+learn python by doing same small project
