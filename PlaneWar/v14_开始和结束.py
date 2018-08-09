@@ -135,8 +135,8 @@ class HeroPlane(BasePlane):
     def is_hit_enemy(self,enemy):
         # 判断是否碰撞敌机
         if pygame.Rect.colliderect(
-            pygame.Rect(self.x,self.y,100,68),
-            pygame.Rect(enemy.x,enemy.y,80,58)
+            pygame.Rect(self.x,self.y,120,78),
+            pygame.Rect(enemy.x,enemy.y,100,68)
         ):
             return True
         else:
@@ -146,9 +146,10 @@ class HeroPlane(BasePlane):
         for enemy in enemy_list:
             if self.is_hit_enemy(enemy):
                 enemy.is_hited = True
-                time.sleep(3)
-                sys.exit()
-                pygame.quit()
+                self.is_hited = True
+                # time.sleep(3)
+                # sys.exit()
+                # pygame.quit()
                 break
 
         self.window.blit(self.img,(self.x,self.y))
@@ -162,7 +163,7 @@ class EnemyPlane(BasePlane):
 
     def display(self):
         if self.is_hited:
-            self.x = random.randint(0, WINDOW_HEIGHT - 100)
+            self.x = random.randint(0, WINDOW_WIDTH- 100)
             self.y = 0
             self.is_hited = False
         self.window.blit(self.img, (self.x, self.y))
@@ -171,7 +172,8 @@ class EnemyPlane(BasePlane):
         self.y += 10
         # 如果到达下边界，回到顶部
         if self.y >= WINDOW_HEIGHT:
-            self.x = random.randint(0, random.randint(0, 512 - 100))
+
+            self.x = random.randint(0, WINDOW_WIDTH-100)
             self.y = 0
 
 
@@ -194,18 +196,19 @@ class Game(object):
         self.game_map = Map("res/img_bg_level_%d.jpg" % random.randint(1,5),self.window)
 
         self.hero_plane = HeroPlane("res/hero2.png", 240, 500, self.window)
-        enemy_plane1 = EnemyPlane("res/img-plane_5.png", random.randint(0, 512 - 100), 0, self.window)
-        enemy_plane2 = EnemyPlane("res/img-plane_3.png", random.randint(0, 512 - 100), random.randint(-400, -150),
-                                  self.window)
-        enemy_plane3 = EnemyPlane("res/img-plane_4.png", random.randint(0, 512 - 100), random.randint(-600, -400),
-                                  self.window)
+        enemy_plane1 = EnemyPlane("res/img-plane_5.png", random.randint(0, WINDOW_WIDTH-100), 0, self.window)
+        enemy_plane2 = EnemyPlane("res/img-plane_3.png", random.randint(0, WINDOW_WIDTH-100), random.randint(-300, -150), self.window)
+        enemy_plane3 = EnemyPlane("res/img-plane_3.png", random.randint(0, WINDOW_WIDTH-100), random.randint(-450, -300), self.window)
+
+
+        # enemy_plane3 = EnemyPlane("res/img-plane_4.png", random.randint(0, 412), random.randint(-600, -400), self.window)
         enemy_list.append(enemy_plane1)
         enemy_list.append(enemy_plane2)
         enemy_list.append(enemy_plane3)
 
         self.enemy_list = enemy_list
 
-        self.score_font = pygame.font.SysFont("res/SIMHEI.TTF",40)
+        self.score_font = pygame.font.Font("res/SIMHEI.TTF",34)
 
     def draw_text(self,content,size,x,y):
         font_obj = pygame.font.Font("res/SIMHEI.TTF",size)
@@ -237,10 +240,11 @@ class Game(object):
         self.wait_game_input()
 
     def game_over(self):
+        print("game over!")
         pygame.mixer.music.stop()
         self.gameover_sound.play()
         self.game_map.display()
-        self.draw_text("战机被击落，得分为%d " % score,28,WINDOW_WIDTH / 3 - 140, WINDOW_HEIGHT / 2)
+        self.draw_text("战机被击落，得分为%d " % score,28,WINDOW_WIDTH / 3 - 100, WINDOW_HEIGHT / 3)
         self.draw_text("按下enter开始游戏，Esc退出游戏。", 28, WINDOW_WIDTH / 3 - 140, WINDOW_HEIGHT / 2)
         pygame.display.update()
         self.wait_game_input()
@@ -251,12 +255,13 @@ class Game(object):
             self.game_start()
 
         while True:
-            print("121111")
+            # print("121111")
             self.game_map.display()
             self.game_map.move()
             self.hero_plane.display()
 
             if self.hero_plane.is_hited:
+                print("is hited")
                 self.hero_plane.is_hited = False
                 global enemy_list
                 enemy_list = []
